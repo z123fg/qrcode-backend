@@ -4,7 +4,8 @@ exports.getGlobalUserDataList = async (req, res) => {
   try {
     const query = UserData.find();
     query.sort({ createTime: -1 });
-    const result = await query;
+    let result = await query;
+    
     const count = await UserData.count();
     res.status(200).json({
       message: "get userData successfully!",
@@ -28,10 +29,9 @@ exports.createSingleUserData = async (req, res) => {
     });
     console.log("userData",userData)
     const userDataWithId = await userData.save();
-    const { _id: id, ...rest } = userDataWithId;
     res.status(201).json({
       message: "create userData successfully!",
-      result: { ...rest, id }
+      result: userDataWithId
     })
   } catch (err) {
     res.status(400).json({
@@ -51,10 +51,9 @@ exports.createUserDataList = async (req, res) => {
     let userDataListWithId = await UserData.insertMany(userDataList)
 
     userDataListWithId = userDataListWithId.map(item => {
-      const { id: _id, ...rest } = item;
-      return { id, ...rest };
+      
+      return item;
     });
-
     res.status(201).json({
       message: "create userData successfully!",
       result: userDataListWithId
@@ -69,15 +68,16 @@ exports.createUserDataList = async (req, res) => {
 
 exports.updateUserData = async (req, res) => {
   try {
-    let { id, ...rest } = req.body;
+    
+    let { _id, ...rest } = req.body;
     const result = await UserData.updateOne(
-      { _id: id },
+      { _id },
       { ...rest, updateTime: Date.now() }
     )
-    if (result.matchedCount > 0) {
+    if (result.matchedCount > 0) {console.log("req",result)
       res.status(200).json({ message: "Update successfully!" });
     } else {
-      res.status(401).json({ message: "no such record" });
+      res.status(400).json({ message: "no such record" });
     }
   } catch (err) {
     res.status(500).json({
