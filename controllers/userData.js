@@ -1,6 +1,6 @@
 const UserData = require("../models/userData");
 
-exports.getUserData = async (req, res) => {
+exports.getGlobalUserDataList = async (req, res) => {
   try {
     const query = UserData.find();
     query.sort({ createTime: -1 });
@@ -18,15 +18,17 @@ exports.getUserData = async (req, res) => {
   }
 };
 
-exports.postUserData = async (req, res) => {
+exports.createSingleUserData = async (req, res) => {
+  
   try {
     const userData = new UserData({
       ...req.body,
       createTime: Date.now(),
       updateTime: Date.now(),
     });
+    console.log("userData",userData)
     const userDataWithId = await userData.save();
-    const { id: _id, ...rest } = userDataWithId;
+    const { _id: id, ...rest } = userDataWithId;
     res.status(201).json({
       message: "create userData successfully!",
       result: { ...rest, id }
@@ -39,7 +41,7 @@ exports.postUserData = async (req, res) => {
 };
 
 
-exports.postUserDataList = async (req, res) => {
+exports.createUserDataList = async (req, res) => {
   try {
     const userDataList = req.body.map(item => ({
       ...item,
@@ -65,7 +67,7 @@ exports.postUserDataList = async (req, res) => {
 };
 
 
-exports.patchUserData = async (req, res) => {
+exports.updateUserData = async (req, res) => {
   try {
     let { id, ...rest } = req.body;
     const result = await UserData.updateOne(

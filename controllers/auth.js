@@ -5,7 +5,7 @@ const User = require("../models/user");
 const JWT_KEY = "z123fg";
 exports.JWT_KEY = JWT_KEY;
 
-exports.createUser = (req, res) => {
+exports.register = (req, res) => {
   
 
   const { isAdmin } = req.body;
@@ -32,7 +32,7 @@ exports.createUser = (req, res) => {
   });
 };
 
-exports.userLogin = (req, res, next) => {
+exports.login = (req, res, next) => {
   
   let fetchedUser;
   User.findOne({ username: req.body.username })
