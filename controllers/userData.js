@@ -24,8 +24,8 @@ exports.createSingleUserData = async (req, res) => {
   try {
     const userData = new UserData({
       ...req.body,
-      createTime: Date.now(),
-      updateTime: Date.now(),
+      createTime: {type:"text", content:Date.now()},
+      updateTime: {type:"text", content:Date.now()},
     });
     console.log("userData",userData)
     const userDataWithId = await userData.save();
@@ -43,11 +43,13 @@ exports.createSingleUserData = async (req, res) => {
 
 exports.createUserDataList = async (req, res) => {
   try {
-    const userDataList = req.body.map(item => ({
-      ...item,
-      createTime: Date.now(),
-      updateTime: Date.now(),
-    }));
+    const userDataList = req.body.map(item => {
+      const {_id,...rest} = item;
+      return ({
+      ...rest,
+      createTime: {type:"text",content:Date.now()},
+      updateTime: {type:"text",content:Date.now()},
+    })});
     let userDataListWithId = await UserData.insertMany(userDataList)
 
     userDataListWithId = userDataListWithId.map(item => {
@@ -72,7 +74,7 @@ exports.updateUserData = async (req, res) => {
     let { _id, ...rest } = req.body;
     const result = await UserData.updateOne(
       { _id },
-      { ...rest, updateTime: Date.now() }
+      { ...rest, updateTime: {type:"text",content:Date.now()} }
     )
     if (result.matchedCount > 0) {console.log("req",result)
       res.status(200).json({ message: "Update successfully!" });
