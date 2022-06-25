@@ -5,7 +5,7 @@ const User = require("../models/user");
 const JWT_KEY = "z123fg";
 exports.JWT_KEY = JWT_KEY;
 
-/* exports.register = (req, res) => {
+exports.register = (req, res) => {
   
 
   const { isAdmin } = req.body;
@@ -30,15 +30,14 @@ exports.JWT_KEY = JWT_KEY;
         });
       });
   });
-}; */
+};
 
 exports.login = (req, res, next) => {
-  
   let fetchedUser;
   User.findOne({ username: req.body.username })
     .then((user) => {
       if (!user) {
-        throw new Error("User doesn't exist!")
+        throw new Error("User doesn't exist!");
       } else {
         fetchedUser = user;
         return bcrypt.compare(req.body.password, user.password);
@@ -46,7 +45,7 @@ exports.login = (req, res, next) => {
     })
     .then((result) => {
       if (!result) {
-        throw new Error("Password doesn't match!")
+        throw new Error("Password doesn't match!");
       } else {
         const token = jwt.sign(
           {
